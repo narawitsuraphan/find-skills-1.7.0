@@ -1,146 +1,146 @@
 name: find-skills
 slug: find-skills
-displayName: ค้นหาทักษะ · Find Skills
-description: ไม่รู้จะติดตั้งสกิลอะไรดี? อยากให้ AI ค้นหาสกิลที่เหมาะสมที่สุดโดยอัตโนมัติหรือไม่? "ค้นหาทักษะ · Find Skills" เป็นเครื่องมือค้นหาสกิลสองระบบที่ขับเคลื่อนด้วยบริบทและคีย์เวิร์ด (skill discovery / skill finder / install skills) ไม่ว่าจะอธิบายสถานการณ์หรือความต้องการด้วยภาษาธรรมชาติ (เช่น "อยากทำโปสเตอร์" "ช่วยวิเคราะห์หุ้นให้หน่อย" "หาสกิลล่าโปรโมชั่น/ส่วนลด") หรือสั่งตรงๆ เช่น "ติดตั้งสกิล / find skills / หาสกิล / มีสกิลทำ XX ไหม" ระบบจะทำการค้นหาแบบรวมศูนย์ 6 ชั้นจาก Built-in ทางการ, สกิลที่ติดตั้งแล้วในเครื่อง, SkillHub, Xiaping (虾评), GitHub และ ClawHub พร้อมแนะนำสกิลที่ตรงจุดที่สุดและติดตั้งได้ในคลิกเดียว เข้ามาแทนที่ปลั๊กอิน find-skills เดิมของทางการอย่างสมบูรณ์ คำกระตุ้น (Trigger): 找技能, 安装技能, 技能推荐, 技能发现, find skills, skill discovery, install skill
+displayName: Skill Discovery · Find Skills
+description: Not sure which skills to install? Want the AI to automatically find the most suitable skills? "Skill Discovery · Find Skills" is a scenario-driven and keyword dual-mode skill discovery tool (skill discovery / skill finder / install skills). Whether using natural language to describe scenarios/needs (e.g., "I want to create a poster," "Help me analyze stocks," "Find a coupon/deal scraper skill"), or explicitly asking to "Install skill / find skills / find a skill / is there a skill for XX," it automatically conducts a 6-layer federated search across Official Built-in, Local Installed, SkillHub, Xiaping, GitHub, and ClawHub to recommend the best matching skills, supporting one-click installation. It completely replaces the official legacy find-skills plugin. Trigger keywords: find skills, install skills, skill recommendation, skill discovery, find skills, skill discovery, install skill.
 version: "1.7.0"
 
-find-skills (ระบบจับคู่สกิลตามบริบทการใช้งาน)
+find-skills (Scenario-Driven Skill Matcher)
 
-ภาพรวม (Overview)
+Overview
 
-สกิลนี้ออกแบบมาเพื่อเป็น เครื่องมือค้นหาสกิลที่ขับเคลื่อนด้วยบริบทการใช้งาน (Scenario-Driven) โดยผู้ใช้เพียงอธิบายความต้องการด้วยภาษาพูดทั่วไป ระบบจะวิเคราะห์เจตนา ค้นหาข้ามแหล่งข้อมูลแบบรวมศูนย์ และแนะนำสกิลที่เหมาะสมที่สุดให้อัตโนมัติ
+This skill functions as a scenario-driven skill discovery engine—users describe their requirements in natural language, and the system automatically interprets the intent, conducts a federated search, and recommends the most suitable skills.
 
-ความสัมพันธ์กับปลั๊กอิน find-skills ตัวเดิมของทางการ:
+Relationship with the official legacy find-skills plugin:
 
-ปลั๊กอิน find-skills ดั้งเดิมถูกตั้งค่าสถานะเป็น DEPRECATED (เลิกใช้งานแล้ว) และจะไม่ถูกทริกเกอร์โดยอัตโนมัติ
+The description of the official legacy find-skills plugin has been marked as DEPRECATED and will not trigger automatically.
 
-สกิลนี้ครอบคลุมความสามารถเดิมทั้งหมดอย่างสมบูรณ์ พร้อมเพิ่มฟังก์ชันการสแกน Built-in ในระบบ, สแกนสกิลที่ติดตั้งในเครื่อง, วิเคราะห์บริบทความหมาย (Semantic Understanding) และแจกแจงเหตุผลประกอบการแนะนำ
+This skill fully encompasses all its capabilities while adding official built-in scanning, local installed scanning, scenario semantic understanding, and structured recommendation rationale outputs.
 
-กระบวนการทำงานหลัก (Core Workflow)
+Core Workflow
 
-ขั้นตอนที่ 1: ทำความเข้าใจบริบทของผู้ใช้ (Understand User Scenario)
+Step 1: Understand User Scenario
 
-สกัดข้อมูลต่อไปนี้จากข้อความภาษาธรรมชาติของผู้ใช้:
+Extract the following from the user's natural language input:
 
-เจตนาของงาน (Task Intent): ผู้ใช้ต้องการทำอะไร?
+Task Intent: What does the user want to accomplish?
 
-หมวดหมู่/ขอบเขต (Domain Tag): จัดอยู่ในสายงานหรือกลุ่มใด?
+Domain Tag: What category/field does it belong to?
 
-คำค้นหา (Search Keywords): ทั้งภาษาจีนและภาษาอังกฤษ (สำหรับค้นหาบนแหล่งข้อมูลภายนอก)
+Search Keywords: Both Chinese and English (for remote searching).
 
-ตัวอย่าง:
+Examples:
 
-"อยากทำโปสเตอร์สักใบ" $\rightarrow$ เจตนา: ออกแบบ/ทำกราฟิก; หมวดหมู่: การสร้างคอนเทนต์ (Content Creation); คีย์เวิร์ด: poster, design, 海报, 设计
+"I want to design a poster" $\rightarrow$ Intent: Design/Graphics; Domain: Content Creation; Keywords: poster, design, 海报, 设计
 
-"ช่วยวิเคราะห์ตลาดหุ้นวันนี้ให้หน่อย" $\rightarrow$ เจตนา: วิเคราะห์หุ้น; หมวดหมู่: การเงิน (Finance); คีย์เวิร์ด: stock, A股, 大盘, 分析
+"Analyze today's broader market trends" $\rightarrow$ Intent: Stock Analysis; Domain: Finance; Keywords: stock, A-share, market index, analysis, 大盘, 股票
 
-ขั้นตอนที่ 2: การค้นหาแบบรวมศูนย์ 3 ระดับ (Three-Tier Federated Search)
+Step 2: Three-Tier Federated Search
 
-2.1 ระดับที่ 1: สกิล Built-in ทางการ (มาพร้อม WorkBuddy ไม่ต้องติดตั้งเพิ่ม)
+2.1 First Tier: Official Built-in Skills (Included with WorkBuddy, no installation required)
 
-สแกนไดเรกทอรีสกิลมาตรฐานที่ฝังมากับตัวแอป แล้วอ่าน name และ description ของแต่ละสกิล:
+Scan the official built-in skills directory and read the name and description of each skill:
 
 ls /Applications/WorkBuddy.app/Contents/Resources/app.asar.unpacked/resources/builtin-skills/
 
 
-ใช้เครื่องมือ Read เพื่ออ่าน YAML frontmatter ในไฟล์ SKILL.md ของแต่ละสกิล แล้วทำ Semantic Matching เทียบกับบริบทของผู้ใช้
+Use the Read tool to inspect each skill's SKILL.md YAML frontmatter and perform semantic matching against the user's scenario.
 
-เกณฑ์การให้คะแนนความตรงกัน (ตามลำดับความสำคัญ):
+Matching Rules (by priority):
 
-คำสำคัญในบริบทของผู้ใช้ปรากฏตรงๆ ใน description ของสกิล $\rightarrow$ คะแนนสูง
+User scenario keywords appear directly in the skill's description $\rightarrow$ High score
 
-ชื่อสกิล (name) สอดคล้องกับเจตนาของผู้ใช้อย่างชัดเจน $\rightarrow$ คะแนนสูง
+Skill name is strongly correlated with user intent $\rightarrow$ High score
 
-คำอธิบาย (description) สอดคล้องกับหมวดหมู่งานของผู้ใช้ $\rightarrow$ คะแนนปานกลาง
+Skill description relates to the user's domain $\rightarrow$ Medium score
 
-2.2 ระดับที่ 2: สกิลที่ติดตั้งไว้แล้วในเครื่อง (Local Installed Skills)
+2.2 Second Tier: Locally Installed Skills
 
-สแกนสกิลที่ติดตั้งไว้แล้วจาก 2 ตำแหน่งต่อไปนี้:
+Scan installed skills in the following two directories:
 
-# สกิลระดับผู้ใช้ (User-level)
+# User-level skills
 ls ~/.workbuddy/skills/
 
-# สกิลระดับโปรเจกต์ (Workspace ปัจจุบัน)
-ls .workbuddy/skills/ 2>/dev/null || echo "ไม่มีสกิลระดับโปรเจกต์"
+# Project-level skills (current workspace)
+ls .workbuddy/skills/ 2>/dev/null || echo "No project-level skills found"
 
 
-ใช้เครื่องมือ Read ดึง YAML frontmatter ใน SKILL.md เพื่อนำ name และ description มาจับคู่ความหมายกับบริบทของผู้ใช้
+Use the Read tool to check each skill's SKILL.md YAML frontmatter, extract the name and description, and perform semantic matching with the user's scenario.
 
-ข้อควรระวัง: หากสกิลที่ติดตั้งในเครื่องตรงกับสกิล Built-in ทางการในขั้นตอน 2.1 ให้ตัดรายการที่ซ้ำออก โดยเก็บเฉพาะรายการที่มีลำดับความสำคัญสูงสุดไว้
+Note: If a locally installed skill also appears in Step 2.1 (Official Built-in), deduplicate and keep only the entry with the highest priority.
 
-2.3 ระดับที่ 3: แหล่งตลาดสกิลภายนอก (Remote Marketplaces)
+2.3 Third Tier: Remote Skill Marketplaces (Completely replaces legacy find-skills capabilities)
 
-ตรวจสอบแคช Local Marketplace ก่อน (อิงตรรกะ Step 5 ของ find-skills เดิม):
+Check local marketplace cache first (Legacy find-skills Step 5 logic):
 
 ls ~/.workbuddy/skills-marketplace/skills 2>/dev/null
 
 
-หากพบสกิลที่ตรงความต้องการอยู่ในแคชท้องถิ่น ให้คัดลอกมาติดตั้งได้ทันที ไม่จำเป็นต้องดาวน์โหลดซ้ำ:
+If a skill matching the user's need exists in the local cache, copy and install directly without remote downloading:
 
 cp -r ~/.workbuddy/skills-marketplace/skills/<skill-folder-name> ~/.workbuddy/skills/<skill-folder-name>
 
 
-การค้นหาจากระยะไกล (Remote Search) (อิงตรรกะ Step 2/2b ของ find-skills เดิม):
+Remote Search (Legacy find-skills Step 2/2b logic):
 
-หากไม่พบในแคชท้องถิ่น ให้ดำเนินการค้นหาตามลำดับแหล่งข้อมูลดังนี้:
+If no results are found in the local cache, search remote marketplaces in the following order:
 
-① SkillHub Official Marketplace (แหล่งหลัก ค้นหาก่อนเป็นอันดับแรก):
+① SkillHub Official Marketplace (Primary source, highest priority):
 
-curl -s "https://lightmake.site/api/v1/search?q=<URL-encoded คีย์เวิร์ดภาษาจีน>&limit=10"
-curl -s "https://lightmake.site/api/v1/search?q=<URL-encoded คีย์เวิร์ดภาษาอังกฤษ>&limit=10"
+curl -s "https://lightmake.site/api/v1/search?q=<URL-encoded Chinese keywords>&limit=10"
+curl -s "https://lightmake.site/api/v1/search?q=<URL-encoded English keywords>&limit=10"
 
 
-กรองผลลัพธ์ที่มีความตรงกันต่ำออก (score < 0.05)
+Filter out low-relevance results where score < 0.05.
 
-② ตลาดสกิลเซี่ยผิง - Xiaping (虾评) (แหล่งรวมสกิลภาษาจีนเป็นหลัก):
+② Xiaping Skill Marketplace (Key source for Chinese skills):
 
-Base URL ของ Xiaping API: https://xiaping.coze.com (หมายเหตุ: ไม่ใช่ coze.site)
+Xiaping API Base URL: https://xiaping.coze.com (Note: not coze.site)
 
-ค้นหาสกิล:
+Search Skills:
 
-# ค้นหาสกิลตามคีย์เวิร์ด
-curl -s "https://xiaping.coze.com/api/skills/search?q=<URL-encoded คีย์เวิร์ด>&limit=10"
+# Search skills by keywords
+curl -s "https://xiaping.coze.com/api/skills/search?q=<URL-encoded keywords>&limit=10"
 
-# ดูรายละเอียดสกิล
+# Fetch skill details
 curl -s "https://xiaping.coze.com/api/skills/<skill-id>"
 
-# ดึงลิงก์ดาวน์โหลดสกิล
+# Fetch skill download URL
 curl -s "https://xiaping.coze.com/api/skills/<skill-id>/download"
 
 
-ต้องโหลดสกิล คู่มือเซี่ยผิง (虾评指南) ก่อน (ที่อยู่ไฟล์: ~/.workbuddy/skills/虾评指南/SKILL.md) แล้วดำเนินการค้นหาและดาวน์โหลดตามข้อกำหนดในหัวข้อ §1.1 + §1.2
+Prerequisite: Load the Xiaping Guide skill first (Path: ~/.workbuddy/skills/虾评指南/SKILL.md), and execute search and download following §1.1 + §1.2 specifications.
 
-ข้อสำคัญ: Xiaping เป็นแหล่งสกิลภาษาจีนที่ครอบคลุมมาก หากเป็นงานที่ใช้ภาษาจีน ผลลัพธ์จาก Xiaping มักจะตรงจุดและใช้งานได้ดีกว่า SkillHub
+Important: Xiaping is the primary repository for Chinese skills. For Chinese prompts and contexts, Xiaping results are often more relevant than SkillHub.
 
-③ คลังสกิลบน GitHub (GitHub Repositories) (แหล่งสกิลแบบโอเพนซอร์ส):
+③ GitHub Skill Repositories (Open-source skill source):
 
-ค้นหาไฟล์สกิลของ WorkBuddy / Claw บน GitHub
+Search GitHub for repositories containing WorkBuddy / Claw skills.
 
-หมายเหตุเรื่องสิทธิ์การเข้าถึง: GitHub Search API จำเป็นต้องมีการยืนยันตัวตน หากมีการตั้งค่าตัวแปรสภาพแวดล้อม GITHUB_TOKEN ระบบจะแนบสิทธิ์ให้อัตโนมัติ (โควตา 5,000 ครั้ง/ชั่วโมง) หากไม่มี จะใช้งานผ่านโควตา Anonymous (60 ครั้ง/ชั่วโมง ซึ่งอาจไม่เพียงพอต่อการใช้งาน)
+Authentication Note: GitHub Search API requires authentication. If the environment variable GITHUB_TOKEN is set, requests are automatically authenticated (5,000 requests/hour); otherwise, anonymous access is used (60 requests/hour, which can easily be exhausted).
 
-# หากมี GitHub Token ให้ใส่ Header สำหรับ Authentication
+# If GITHUB_TOKEN exists, attach authentication header
 if [ -n "$GITHUB_TOKEN" ]; then
   AUTH_HEADER="-H \"Authorization: Bearer $GITHUB_TOKEN\""
 else
   AUTH_HEADER=""
 fi
 
-# ค้นหาโค้ดที่มีไฟล์ SKILL.md
-curl -s $AUTH_HEADER "https://api.github.com/search/code?q=filename:SKILL.md+<คีย์เวิร์ด>&per_page=10"
+# Search code containing SKILL.md
+curl -s $AUTH_HEADER "https://api.github.com/search/code?q=filename:SKILL.md+<keywords>&per_page=10"
 
-# ค้นหารีโพสิทอรีที่เกี่ยวข้องกับสกิล
-curl -s $AUTH_HEADER "https://api.github.com/search/repositories?q=<URL-encoded คีย์เวิร์ด>+skill+in:name,description&per_page=10"
+# Search skill-related repositories
+curl -s $AUTH_HEADER "https://api.github.com/search/repositories?q=<URL-encoded keywords>+skill+in:name,description&per_page=10"
 
 
-ข้อควรระวัง: GitHub Code Search API (filename:SKILL.md) ต้องยืนยันตัวตนเท่านั้นจึงจะใช้งานได้ หากไม่มี GITHUB_TOKEN ระบบจะลดระดับมาค้นหาเฉพาะ Repositories อย่างเดียว (ค้นหาแบบ Anonymous ได้)
+Note: GitHub Code Search API (filename:SKILL.md) strictly requires authentication. If GITHUB_TOKEN is missing, fallback to searching repositories only (anonymous search supported).
 
-วิธีการติดตั้ง:
+Installation Method:
 
-# Clone คลังสกิลมาจาก GitHub
+# Clone the skill repository from GitHub
 git clone "https://github.com/<user>/<repo>.git" <target-skills-dir>/<skill-name>/
 
-# ตรวจสอบความถูกต้องของการติดตั้ง
+# Verify installation
 ls <target-skills-dir>/<skill-name>/SKILL.md
 
 
-ข้อควรระวัง: ผลลัพธ์จาก GitHub จำเป็นต้องมีการตรวจสอบด้วยตนเองอีกครั้งว่ามีไฟล์ SKILL.md ที่สมบูรณ์หรือไม่ เนื่องจากการค้นหาโค้ดอาจติดไฟล์ทั่วไปที่ไม่ใช่โครงสร้างสกิลที่ถูกต้องกลับมาด้วย
+Note: GitHub search results require manual verification to confirm valid skill structure (presence of SKILL.md), as generic code searches may return unrelated files.
